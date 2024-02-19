@@ -3,6 +3,7 @@
 ## Références
 
 - https://heig-tin-info.github.io/handout/index.html
+- https://cplusplus.com/reference/cstdio/printf/?kw=printf
 
 ## Dates des TE
 
