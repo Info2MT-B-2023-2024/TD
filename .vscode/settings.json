@@ -1,0 +1,17 @@
+{
+    "editor.formatOnSave": true,
+    "editor.formatOnType": true,
+    "git.ignoreLimitWarning": true,
+    "debug.internalConsoleOptions": "neverOpen",
+    "cmake.configureOnOpen": false,
+    "spellright.documentTypes": [
+        "markdown",
+        "latex",
+        "plaintext"
+    ],
+    "spellright.language": [
+        "fr"
+    ],
+    "terminal.integrated.shellIntegration.enabled": false,
+    "terminal.integrated.shellIntegration.decorationsEnabled": true,
+}

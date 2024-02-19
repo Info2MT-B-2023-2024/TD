@@ -1,0 +1,15 @@
+{
+	"folders": [
+		{
+			"path": "."
+		}
+	],
+	"settings": {
+		"git.ignoreLimitWarning": true,
+		"terminal.integrated.rendererType": "dom",
+		"files.associations": {
+			"chrono": "c",
+			"algorithm": "c"
+		}
+	}
+}
