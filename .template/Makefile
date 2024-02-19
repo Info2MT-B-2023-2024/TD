@@ -7,6 +7,7 @@ EXEC=app
 
 CC=gcc
 CFLAGS+= -std=c99 -Wall -g
+CFLAGS+= -D=_XOPEN_SOURCE
 LDLIBS:= -lm 
 
 ODIR:=obj
