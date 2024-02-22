@@ -9,7 +9,8 @@
 		"terminal.integrated.rendererType": "dom",
 		"files.associations": {
 			"chrono": "c",
-			"algorithm": "c"
+			"algorithm": "c",
+			"stdio.h": "c"
 		}
 	}
 }
