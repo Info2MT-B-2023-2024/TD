@@ -44,7 +44,8 @@ int create_file(const char *filename)
 		sum_x += x;
 		sum_y += y;
 
-		fprintf(f, "%+6.3lf %+6.3lf\n", x, y);
+		//fprintf(f, "%+6.3lf %+6.3lf\n", x, y);
+		fprintf(f, "%+.15lf %+.15lf\n", x, y);
 	}
 	mean_x = sum_x / NUM_POINTS;
 	mean_y = sum_y / NUM_POINTS;
@@ -66,6 +67,12 @@ int process_file(const char *filename)
 	FILE *f = NULL;
 	double x = 0.;
 	double y = 0.;
+	double sum_x = 0.;
+	double sum_y = 0.;
+	double mean_x = 0.;
+	double mean_y = 0.;
+	size_t num_lines = 0;
+	
 	int ret = 0;
 
 	f = fopen(filename, "r");
@@ -83,21 +90,28 @@ int process_file(const char *filename)
 	// création du fichier
 	// Q: que proposez-vous pour améliorer la précision des calculs ? (en conservant un fichier txt)
 
-	ret = fscanf(f, "%lf %lf", &x, &y);
-	if (2 != ret)
-	{
-		fprintf(stderr, "error while reading %s.\n", filename);
-		return 1;
-	}
-	printf("%+6.3lf %+6.3lf\n", x, y);
+	do {
 
-	ret = fscanf(f, "%lf %lf", &x, &y);
-	if (2 != ret)
-	{
-		fprintf(stderr, "error while reading %s.\n", filename);
-		return 1;
-	}
-	printf("%+6.3lf %+6.3lf\n", x, y);
+		ret = fscanf(f, "%lf %lf", &x, &y);
+		if (!feof(f)) {
+			if (2 != ret)
+			{
+				fprintf(stderr, "error while reading %s.\n", filename);
+				return 1;
+			}
+			sum_x += x;
+			sum_y += y;
+			num_lines++;
+			//printf("%ld, %+6.3lf %+6.3lf\n", num_lines, x, y);
+		}
+
+	} while (!feof(f));
+
+	mean_x = sum_x / num_lines;
+	mean_y = sum_y / num_lines;
+
+	printf("mean_x = %+.15lf\n", mean_x);
+	printf("mean_y = %+.15lf\n", mean_y);
 
 	if (fclose(f) != 0)
 	{
