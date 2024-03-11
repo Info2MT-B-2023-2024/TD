@@ -189,7 +189,7 @@ int create_file_v2(const char *filename)
 	return 0;
 }
 
-int process_file_v2(const char *filename)
+int process_file(const char *filename)
 {
 	FILE *f = NULL;
 	size_t num_elem = 0;
@@ -215,7 +215,7 @@ int process_file_v2(const char *filename)
 		fprintf(stderr, "error while reading header from %s.\n", filename);
 		return 1;
 	}
-	if(file_type != 'd')
+	if (file_type != 'd')
 	{
 		fprintf(stderr, "error while reading header from %s.\n", filename);
 		return 1;
@@ -226,7 +226,6 @@ int process_file_v2(const char *filename)
 		return 1;
 	}
 	printf("num_elem = %zu\n", num_elem);
-
 
 	for (index = 0; index < num_elem; index++)
 	{
@@ -269,7 +268,7 @@ int main(int argc, const char *argv[])
 	{
 		return ret;
 	}
-	ret = process_file_v2(filename);
+	ret = process_file(filename);
 	if (ret != 0)
 	{
 		return ret;
