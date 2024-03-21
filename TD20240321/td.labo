@@ -1,0 +1,126 @@
+#include <stdio.h>
+#include <stdint.h>
+#include <stdlib.h>
+/*
+#if CPU==INTELx64
+typedef int in32_t;
+#elif CPU == INTELx86
+typedef   long in32_t;
+#else
+#error "NO_VALID_CPU"
+#endif
+*/
+#pragma pack(push, 1)
+typedef struct
+{
+    uint16_t type;
+    uint32_t size;
+    uint16_t reserved1;
+    uint16_t reserved2;
+    uint32_t offset;
+} bmp_header;
+
+typedef struct
+{
+    uint32_t size;
+    int32_t width;
+    int32_t height;
+    uint16_t planes;
+    uint16_t bitsPerPixel;
+    uint32_t compression;
+    uint32_t imageSize;
+    int32_t xPixelsPerMeter;
+    int32_t yPixelsPerMeter;
+    uint32_t colorsUsed;
+    uint32_t colorsImportant;
+} bmp_info_header;
+
+typedef struct
+{
+    uint8_t red;
+    uint8_t green;
+    uint8_t blue;
+} pixel_color;
+
+#pragma pack(pop)
+
+int process_bmp_file(const char *filename)
+{
+    const unsigned short BMP_SIGNATURE = 0x4D42; // BM
+    FILE *f = NULL;
+    int ret = 0;
+    f = fopen(filename, "rb");
+    if (NULL == f)
+    {
+        fprintf(stderr, "error while opening %s.\n", filename);
+        return 1;
+    }
+
+    bmp_header header;
+    ret = fread(&header, sizeof(bmp_header), 1, f);
+    if (ret != 1)
+    {
+        fprintf(stderr, "error while reading header of %s.\n", filename);
+        return 1;
+    }
+    printf("offset=%d\n", header.offset);
+
+    bmp_info_header info_header;
+    ret = fread(&info_header, sizeof(bmp_info_header), 1, f);
+    if (ret != 1)
+    {
+        fprintf(stderr, "error while reading info_header of %s.\n", filename);
+        return 1;
+    }
+    if (header.type != BMP_SIGNATURE)
+    {
+        fprintf(stderr, "error bad signature in %s.\n", filename);
+        return 1;
+    }
+
+    printf("width=%d\n", info_header.width);
+    printf("height=%d\n", info_header.height);
+
+    pixel_color *img = NULL;
+    size_t img_size = info_header.width * info_header.height;
+    img = (pixel_color *)malloc(img_size * sizeof(pixel_color));
+    if (NULL == img)
+    {
+        fprintf(stderr, "error while allocating memory for %s.\n", filename);
+        return 1;
+    }
+    fseek(f, header.offset, SEEK_SET);
+    ret = fread(img, sizeof(pixel_color), img_size, f);
+    if (ret != img_size)
+    {
+        fprintf(stderr, "error while reading data from %s.\n", filename);
+        free(img);
+        return 1;
+    }
+    size_t line = 0;
+    size_t column = 0;
+
+    for (line = 0; line < info_header.height; line += 1)
+    {
+        for (column = 0; column < info_header.width; column += 1)
+        {
+            size_t index = (line * info_header.width + column);
+            putchar(img[index].red > 127 ? '*' : ' ');
+        }
+        puts("");
+    }
+    return 0;
+}
+
+int main(int argc, char const *argv[])
+{
+    const char *filename = "data/smile2.bmp";
+    int ret = 0;
+
+    ret = process_bmp_file(filename);
+    if (ret != 0)
+    {
+        return ret;
+    }
+    return 0;
+}
