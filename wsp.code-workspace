@@ -10,7 +10,8 @@
 		"files.associations": {
 			"chrono": "c",
 			"algorithm": "c",
-			"stdio.h": "c"
+			"stdio.h": "c",
+			"stdlib.h": "c"
 		}
 	}
 }
