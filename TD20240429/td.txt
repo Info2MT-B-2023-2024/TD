@@ -40,54 +40,73 @@ typedef union
 
 typedef struct
 {
-	header h; /*!< the header */
-	data d;	  /*!< the payload */
+	header h;
+	data *d;
 } packet;
 
 void display_packet(const packet p)
 {
-	data the_data = p.d;
-	switch (p.h.type)
+	size_t index = 0;
+	for (index = 0; index < p.h.qty; index++)
 	{
-	case POINT2D:
-		printf("Point2D: x=%+6.3lf, y=%+6.3lf\n",
-			   the_data.p.x, the_data.p.y);
-		break;
-	case COLOR:
-		printf("Color: r=%3d, g=%3d, b=%3d\n",
-			   the_data.c.r, the_data.c.g, the_data.c.b);
-		break;
-	default:
-		puts("Unknown packet type.");
-		break;
+		switch (p.h.type)
+		{
+		case POINT2D:
+			printf("Point2D: x=%+6.3lf, y=%+6.3lf\n",
+				   p.d[index].p.x, p.d[index].p.y);
+			break;
+		case COLOR:
+			printf("Color: r=%3d, g=%3d, b=%3d\n",
+				   p.d[index].c.r, p.d[index].c.g, p.d[index].c.b);
+			break;
+		default:
+			puts("Unknown packet type.");
+			break;
+		}
 	}
 }
 
-void send(const packet p, char *buff) {
+void send(const packet p, char *buff)
+{
 	size_t n = sizeof(header) + p.h.qty * sizeof(data);
-	printf("send: n=%ld\n", n);
-	memcpy(buff, &p, n);
+	memcpy(buff, &(p.h), sizeof(header));
+	buff += sizeof(header);
+	memcpy( buff, p.d, p.h.qty * sizeof(data));
+
 }
-void receive(char *buff, packet *p) {
+
+void receive(char *buff, packet *p)
+{
 	packet *tmp = (packet *)buff;
-	printf("tmp.h.qty=%ld\n", tmp->h.qty);
 	size_t n = sizeof(header) + tmp->h.qty * sizeof(data);
-	printf("receive: n=%ld\n", n);
-	memcpy(p, buff, n);
+	memcpy(&(p->h), buff, sizeof(header));
+	buff += sizeof(header);
+	data *pdata = (data *)malloc(p->h.qty * sizeof(data));
+	p->d = pdata;
+	memcpy(p->d, buff, p->h.qty * sizeof(data));
 }
 
 int main(void)
 {
-
 	packet p1;
 	packet p2;
 	char *buffer = NULL;
 	p1.h.type = POINT2D;
-	p1.h.qty = 1;
+	p1.h.qty = 5;
 	p1.h.checksum = 0x00;
 
-	p1.d.p.x = 10.;
-	p1.d.p.y = 15.;
+	data *pdata = (data *)malloc(p1.h.qty * sizeof(data));
+	p1.d = pdata;
+	p1.d[0].p.x = 10.;
+	p1.d[0].p.y = 15.;
+	p1.d[1].p.x = 20.;
+	p1.d[1].p.y = 25.;
+	p1.d[2].p.x = 30.;
+	p1.d[2].p.y = 35.;
+	p1.d[3].p.x = 40.;
+	p1.d[3].p.y = 45.;
+	p1.d[4].p.x = 50.;
+	p1.d[4].p.y = 55.;
 
 	size_t n = sizeof(header) + p1.h.qty * sizeof(data);
 	printf("main: n=%ld\n", n);
