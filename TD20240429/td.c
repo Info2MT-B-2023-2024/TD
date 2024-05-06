@@ -118,7 +118,7 @@ void receive(char *buff, packet *p)
 		return;
 	}
 
-	p->d = pdata;
+	p->d = pdata; // (*p).d = pdata;
 	memcpy(p->d, buff, p->h.qty * sizeof(data));
 }
 
