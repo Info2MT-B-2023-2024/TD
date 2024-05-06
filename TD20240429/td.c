@@ -12,8 +12,7 @@ typedef enum
 
 char *data_type_name[END] = {
 	"POINT 2D",
-	"COLOR"
-};
+	"COLOR"};
 
 typedef struct
 {
@@ -52,26 +51,14 @@ typedef struct
 
 data *init_packet(const data_type type, const size_t qty, const uint8_t checksum, packet *p)
 {
-
 	if (NULL == p)
 		return NULL;
 
 	p->h.type = type;
-	//(*p).type = type;
 	p->h.qty = qty;
 	p->h.checksum = checksum;
 
 	p->d = (data *)malloc(p->h.qty * sizeof(data));
-
-	/*data *d = p->d;
-	d->c.r = 255;
-	d->c.g = 0;
-	d->c.b = 0;
-	d++;
-	d->c.r = 0;
-	d->c.g = 255;
-	d->c.b = 0;*/
-
 	return p->d;
 }
 
@@ -104,7 +91,7 @@ void display_packet(const packet p)
 			break;
 		case COLOR:
 			printf("element %zu: r=%3d, g=%3d, b=%3d\n",
-				   index,p.d[index].c.r, p.d[index].c.g, p.d[index].c.b);
+				   index, p.d[index].c.r, p.d[index].c.g, p.d[index].c.b);
 			break;
 		default:
 			puts("Unknown packet type.");
@@ -112,25 +99,38 @@ void display_packet(const packet p)
 		}
 	}
 }
+
+void send(const packet p, char *buff)
+{
+	memcpy(buff, &(p.h), sizeof(header));
+	buff += sizeof(header);
+	memcpy(buff, p.d, p.h.qty * sizeof(data));
+}
+
+void receive(char *buff, packet *p)
+{
+	memcpy(&(p->h), buff, sizeof(header));
+	buff += sizeof(header);
+	data *pdata = (data *)malloc(p->h.qty * sizeof(data));
+	if (NULL == pdata)
+	{
+		printf("Error allocation pdata.");
+		return;
+	}
+
+	p->d = pdata;
+	memcpy(p->d, buff, p->h.qty * sizeof(data));
+}
+
 int main(void)
 {
 	packet p1;
+	packet p2;
 	color red = {255, 0, 0};
 	color green = {0, 255, 0};
-	/*
-	p1.h.type = COLOR;
-	p1.h.qty = 2;
-	p1.h.checksum = 0;
+	color blue = {0, 0, 255};
 
-	p1.d = (data *)malloc(p1.h.qty * sizeof(data));
-	if (NULL == p1.d)
-	{
-		printf("Error allocation data for p1.");
-		return 1;
-	}
-*/
-
-	if (NULL == init_packet(COLOR, 2, 0, &p1))
+	if (NULL == init_packet(COLOR, 3, 0, &p1))
 	{
 		printf("Error allocation data for p1.");
 		return 1;
@@ -138,20 +138,18 @@ int main(void)
 
 	p1.d[0].c = red; // =  struct => copy all fields
 	p1.d[1].c = green;
-	/*
-	p1.d[0].c.r = 255;
-	p1.d[0].c.g = 0;
-	p1.d[0].c.b = 0;
+	p1.d[2].c = blue;
 
-	p1.d[1].c.r = 0;
-	p1.d[1].c.g = 255;
-	p1.d[1].c.b = 0;
-	*/
 	display_packet(p1);
 
-	// TODO: create the buffer buff
-	// TODO: write the send function
+	char *buff = (char *)malloc(p1.h.qty * sizeof(data) + sizeof(header));
+	if (NULL == buff)
+	{
+		printf("Error allocation buffer.");
+		return 1;
+	}
 
-	// FIXME: 
 	send(p1, buff);
+	receive(buff, &p2);
+	display_packet(p2);
 }
