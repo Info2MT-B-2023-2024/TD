@@ -23,3 +23,4 @@ typedef struct
 error_code init_list(list *l);
 void display_list(list l);
 error_code insert(list *l, element e, size_t position);
+error_code list_is_full(list *l);
