@@ -1,34 +1,17 @@
 #pragma once
-
-#include <stdio.h>
 #include "error.h"
-
-typedef enum
-{
-	LAST_POS=-1,
-	FIRST_POS=0
-} position;
+#include "node.h"
 
 typedef struct
 {
-	double x;
-	double y;
-} point2D;
+	node *head; // or first
+	node *tail; // or last
 
-typedef point2D element;
-
-typedef struct node {
-	element e;
-	struct node *prev;
-	struct node *next;
-} node;
-
-typedef struct
-{
-	node *first;
-	node *last;
-	size_t num_elem;
 } list;
 
-error_code init_list(list *l);
-error_code insert(list *l, element e, int pos);
+void init_list(list *l);
+void insert_node_at_tail(list *l, node *n);
+void insert_node_at_head(list *l, node *n);
+void display_list(list l);
+void insert_node_at_index(list *l, node *n, int index);
+void delete_at_index_list(list *l, int index);
